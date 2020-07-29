@@ -1,26 +1,62 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Fragment, useState, useEffect } from 'react';
+import Inputs from './components/Inputs';
+import Parcelas from './components/Parcelas';
+import css from './app.module.css';
+import { CSSTransition } from 'react-transition-group';
+import './appanimation.css';
 
-function App() {
+export default function App() {
+
+  const [capital, setCapital] = useState(0.0);
+  const [juros, setJuros] = useState(0.0);
+  const [tempo, setTempo] = useState(1);
+  const [showParcelas, setShowParcelas] = useState(false);
+
+  const handleCapitalChange = (capitalChange) => {
+    setCapital(capitalChange);
+  }
+  const handleJuroslChange = (jurosChange) => {
+    setJuros(jurosChange);
+  }
+  const handleTempoChange = (tempoChange) => {
+    setTempo(tempoChange);
+  }
+
+  useEffect(() => {
+    if (capital > 0.0 && (juros < 0 || juros > 0)) {
+      setShowParcelas(true);
+    } else {
+      setShowParcelas(false);
+    }
+  }, [capital, juros]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Fragment>
+      <div className='container'>
+        <h1 className={css.title}>Juros compostos</h1>
+          <Inputs
+            capital={capital}
+            onCapital={handleCapitalChange}
+            juros={juros}
+            onJuros={handleJuroslChange}
+            tempo={tempo}
+            onTempo={handleTempoChange}
+          />
+        {showParcelas && (
+          <CSSTransition
+              in={true}
+              timeout={300}
+              classNames="parcelas"
+              unmountOnExit
+            >
+          <Parcelas
+            capital={capital}
+            juros={juros}
+            tempo={tempo}
+          />
+          </CSSTransition>
+        )}
+      </div>
+    </Fragment>
   );
 }
-
-export default App;
